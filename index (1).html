@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Scoreur Cricket Fléchettes</title>
+  <style>
+    body {
+      margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg,#e0e7ff,#fffbe8);
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    }
+    h1 { color: #2d2a5e; margin-top: 32px; margin-bottom: 16px; }
+    .config {
+      margin-bottom: 18px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .board {
+      background: rgba(255,255,255,0.96); border-radius: 22px; box-shadow: 0 6px 28px #0002;
+      padding: 28px 10px 24px 10px; width: 100%; max-width: 600px;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: separate; border-spacing: 0 8px;
+      width: 100%;
+    }
+    th, td { text-align: center; padding: 4px 0; }
+    th { color: #2d2a5e; font-size: 1.07rem; }
+    .numcell {
+      width: 48px; font-weight: bold;
+      color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      text-align: center;
+      background: linear-gradient(120deg,#eab308,#2d2a5e 80%);
+      font-size: 1.18rem;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .marks { display: flex; justify-content: center; gap: 8px; }
+    .circle {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #bba02e;
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 1px 4px #0001; transition: transform 0.12s;
+    }
+    .circle.filled {
+      background: #2d2a5e;
+      border-color: #2d2a5e;
+      position: relative;
+    }
+    .circle.filled::after {
+      content: '';
+      display: block;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #bba02e;
+    }
+    .circle:hover { transform: scale(1.13); }
+    .reset-btn {
+      background: #2d2a5e; color: #fff; border: none; border-radius: 13px;
+      padding: 8px 18px; font-size: 1rem; font-weight: 600; margin-top: 28px;
+      box-shadow: 0 2px 8px #0001; cursor: pointer; transition: background .15s;
+    }
+    .reset-btn:hover { background: #bba02e; color: #2d2a5e; }
+    @media (max-width: 650px) {
+      .board { padding: 10px 2px 12px 2px; }
+      .numcell { width: 35px; font-size: 1rem; }
+      .circle { width: 22px; height: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Scoreur Cricket Fléchettes</h1>
+  <div class="config">
+    <label for="players">Nombre de joueurs :</label>
+    <select id="players">
+      <option>1</option><option selected>2</option><option>3</option><option>4</option>
+    </select>
+  </div>
+  <div class="board">
+    <table id="scoreboard"></table>
+    <button class="reset-btn" onclick="resetBoard()">Réinitialiser</button>
+  </div>
+  <script>
+    const numbers = [15, 16, 17, 18, 19, 20];
+    const scoreboard = document.getElementById('scoreboard');
+    const playersSelect = document.getElementById('players');
+    let state = []; // [ [0,0,...], ...] par ligne
+
+    function createState(nbPlayers) {
+      return numbers.map(() => Array(nbPlayers).fill(0));
+    }
+
+    function renderBoard() {
+      const nbPlayers = Number(playersSelect.value);
+      scoreboard.innerHTML = "";
+      // header
+      const header = document.createElement('tr');
+      header.innerHTML = `<th></th>` + Array.from({length: nbPlayers},(_,i)=>`<th>Joueur ${i+1}</th>`).join('');
+      scoreboard.appendChild(header);
+      // rows
+      numbers.forEach((num, rowIdx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><span class="numcell">${num}</span></td>` + 
+          state[rowIdx].map((marks, playerIdx) => {
+            let circles = '';
+            for (let m=0; m<3; m++) {
+              circles += `<span class="circle${marks > m ? ' filled' : ''}" data-row="${rowIdx}" data-player="${playerIdx}" data-mark="${m}"></span>`;
+            }
+            return `<td><div class="marks">${circles}</div></td>`;
+          }).join('');
+        scoreboard.appendChild(tr);
+      });
+    }
+
+    function resetBoard() {
+      const nbPlayers = Number(playersSelect.value);
+      state = createState(nbPlayers);
+      renderBoard();
+    }
+
+    // Event delegation for mark clicks
+    scoreboard.addEventListener('click', function(e){
+      const c = e.target;
+      if (!c.classList.contains('circle')) return;
+      const row = Number(c.dataset.row);
+      const player = Number(c.dataset.player);
+      const mark = Number(c.dataset.mark);
+      if (state[row][player] === mark + 1) {
+        state[row][player] = mark;
+      } else if (state[row][player] < mark + 1) {
+        state[row][player] = mark + 1;
+      } else {
+        state[row][player] = mark + 1;
+      }
+      renderBoard();
+    });
+
+    playersSelect.addEventListener('change', function() {
+      resetBoard();
+    });
+
+    // First render
+    resetBoard();
+  </script>
+  <p style="margin:24px 0 6px 0;font-size:.93rem;color:#888;text-align:center">
+    Fait par Nicolas & ChatGPT – <b>Utilise sur GitHub Pages sans aucune dépendance.</b>
+  </p>
+</body>
+</html>
