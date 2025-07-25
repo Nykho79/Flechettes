@@ -3,28 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Scoreur Cricket Fléchettes</title>
+  <title>Scoreur Cricket Fléchettes – Fun</title>
   <style>
     body {
-      margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg,#e0e7ff,#fffbe8);
+      margin: 0; font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg,#e0e7ff,#fffbe8);
       min-height: 100vh; display: flex; flex-direction: column; align-items: center;
     }
-    h1 { color: #2d2a5e; margin-top: 32px; margin-bottom: 16px; }
+    h1 { color: #2d2a5e; margin-top: 32px; margin-bottom: 14px; letter-spacing: .02em; }
     .config {
-      margin-bottom: 18px;
-      display: flex; gap: 8px; align-items: center;
+      margin-bottom: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
     }
+    .config label { font-weight: 500; }
     .board {
-      background: rgba(255,255,255,0.96); border-radius: 22px; box-shadow: 0 6px 28px #0002;
-      padding: 28px 10px 24px 10px; width: 100%; max-width: 600px;
+      background: rgba(255,255,255,0.97); border-radius: 22px; box-shadow: 0 6px 28px #0002;
+      padding: 28px 10px 22px 10px; width: 100%; max-width: 800px;
       overflow-x: auto;
     }
     table {
       border-collapse: separate; border-spacing: 0 8px;
       width: 100%;
+      min-width: 360px;
     }
     th, td { text-align: center; padding: 4px 0; }
-    th { color: #2d2a5e; font-size: 1.07rem; }
+    th { color: #2d2a5e; font-size: 1.07rem; font-weight: 600; }
     .numcell {
       width: 48px; font-weight: bold;
       color: #fff;
@@ -35,34 +37,104 @@
       font-size: 1.18rem;
       box-shadow: 0 2px 8px #0001;
     }
-    .marks { display: flex; justify-content: center; gap: 8px; }
+    .marks { display: flex; justify-content: center; gap: 8px; position: relative;}
     .circle {
-      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #bba02e;
+      width: 28px; height: 28px; border-radius: 50%; border: 2px solid #bba02e;
       background: #fff; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 1px 4px #0001; transition: transform 0.12s;
+      cursor: pointer; box-shadow: 0 1px 4px #0001; transition: transform 0.12s, border-color 0.2s;
+      position: relative;
+      z-index: 1;
     }
     .circle.filled {
       background: #2d2a5e;
       border-color: #2d2a5e;
-      position: relative;
+      animation: pop 0.18s cubic-bezier(.22,1.1,.36,.99);
     }
     .circle.filled::after {
       content: '';
       display: block;
-      width: 12px; height: 12px; border-radius: 50%;
+      width: 13px; height: 13px; border-radius: 50%;
       background: #bba02e;
     }
-    .circle:hover { transform: scale(1.13); }
+    .circle:hover { transform: scale(1.13) rotate(-8deg);}
+    @keyframes pop {
+      0% { transform: scale(0.3);}
+      100% { transform: scale(1);}
+    }
+    .row-closed {
+      background: #bbb9; transition: background 0.5s;
+      position: relative;
+    }
+    .closed-tag {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%,-50%) rotate(-7deg);
+      background: #2d2a5ebd; color: #fff;
+      font-size: .96rem; font-weight: bold;
+      border-radius: 9px; padding: 1px 12px 2px 12px;
+      pointer-events: none;
+      z-index: 2;
+      box-shadow: 0 2px 8px #2222;
+      letter-spacing: .01em;
+      opacity: .94;
+      border: 2px solid #bba02e;
+      animation: bounceTag .4s cubic-bezier(.43,2.3,.26,1.3);
+    }
+    @keyframes bounceTag {
+      0% { transform: translate(-50%,-60%) scale(.5) rotate(-7deg);}
+      65% { transform: translate(-50%,-54%) scale(1.14) rotate(-7deg);}
+      100% { transform: translate(-50%,-50%) scale(1) rotate(-7deg);}
+    }
+    .edit-names {
+      display: flex; gap: 12px; justify-content: center; margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .edit-names input {
+      border: 1.3px solid #bba02e; border-radius: 6px; font-size: 1.04rem;
+      padding: 3px 9px; margin-right: 2px;
+      color: #2d2a5e; font-weight: bold; background: #fffde6;
+      width: 104px; text-align: center;
+      outline: none; box-shadow: 0 1px 6px #2221;
+      transition: border 0.16s;
+    }
+    .edit-names input:focus { border: 2px solid #2d2a5e; background: #fffaee;}
     .reset-btn {
       background: #2d2a5e; color: #fff; border: none; border-radius: 13px;
       padding: 8px 18px; font-size: 1rem; font-weight: 600; margin-top: 28px;
       box-shadow: 0 2px 8px #0001; cursor: pointer; transition: background .15s;
     }
     .reset-btn:hover { background: #bba02e; color: #2d2a5e; }
+    .scorezone {
+      margin-top: 26px; text-align: center;
+      font-size: 1.11rem; background: #fff7; border-radius: 18px;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+      padding: 16px 4px 9px 4px;
+      box-shadow: 0 1px 9px #0001;
+    }
+    .scorezone b { color: #2d2a5e;}
+    .score-list {
+      display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;
+      margin-bottom: 8px; margin-top: 3px;
+    }
+    .leader {
+      font-size: 1.08em; color: #bba02e;
+      animation: wiggle 1.1s infinite alternate cubic-bezier(.71,-0.29,.71,1.41);
+    }
+    @keyframes wiggle {
+      0% { transform: rotate(-1.5deg);}
+      100% { transform: rotate(1.9deg);}
+    }
+    .confetti {
+      pointer-events: none;
+      position: absolute; left:0; top:0; width:100vw; height:100vh; z-index:999;
+      overflow: hidden;
+    }
     @media (max-width: 650px) {
-      .board { padding: 10px 2px 12px 2px; }
-      .numcell { width: 35px; font-size: 1rem; }
+      .board { padding: 10px 2px 10px 2px; }
+      .numcell { width: 35px; font-size: .99rem; }
       .circle { width: 22px; height: 22px; }
+      .edit-names input { width: 75px; font-size: .99rem;}
+      .scorezone { padding: 11px 2px 6px 2px;}
     }
   </style>
 </head>
@@ -74,55 +146,202 @@
       <option>1</option><option selected>2</option><option>3</option><option>4</option>
     </select>
   </div>
+  <div class="edit-names" id="edit-names"></div>
   <div class="board">
     <table id="scoreboard"></table>
     <button class="reset-btn" onclick="resetBoard()">Réinitialiser</button>
   </div>
+  <div class="scorezone" id="scorezone"></div>
+  <canvas id="confetti-canvas" class="confetti" style="display:none"></canvas>
   <script>
+    // Paramètres
     const numbers = [15, 16, 17, 18, 19, 20];
     const scoreboard = document.getElementById('scoreboard');
     const playersSelect = document.getElementById('players');
-    let state = []; // [ [0,0,...], ...] par ligne
+    const editNamesDiv = document.getElementById('edit-names');
+    const scorezone = document.getElementById('scorezone');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+
+    let state = [];
+    let playerNames = [];
+    let nbPlayers = Number(playersSelect.value);
 
     function createState(nbPlayers) {
       return numbers.map(() => Array(nbPlayers).fill(0));
     }
+    function createNames(nbPlayers) {
+      return Array(nbPlayers).fill(0).map((_,i) => "Joueur " + (i+1));
+    }
 
+    // Saisie noms joueurs
+    function renderEditNames() {
+      editNamesDiv.innerHTML = "";
+      playerNames.forEach((name, idx) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = name;
+        input.maxLength = 16;
+        input.addEventListener("input", e => {
+          playerNames[idx] = e.target.value.trim() || "Joueur " + (idx+1);
+          renderBoard();
+          renderScore();
+        });
+        editNamesDiv.appendChild(input);
+      });
+    }
+
+    // Calcul du score
+    function calcScores() {
+      // Une fois la case fermée (3 ronds), si un joueur continue à marquer dessus,
+      // il marque (nombre)*(nombre de touches au-dessus de 3) points, MAIS uniquement si les autres joueurs n'ont pas fermé (cricket classique).
+      // Ici on fait le score standard : chaque "overkill" = (marks - 3) * valeur, uniquement si un ou plusieurs autres joueurs n'ont pas fermé.
+      let scores = Array(nbPlayers).fill(0);
+      numbers.forEach((num, rowIdx) => {
+        let row = state[rowIdx];
+        for (let p=0;p<nbPlayers;p++) {
+          let marks = row[p];
+          if (marks > 3) {
+            // On ne compte que si AU MOINS un adversaire n’a pas fermé
+            let someoneNotClosed = row.some((v,i)=>i!==p && v<3);
+            if (someoneNotClosed) {
+              scores[p] += (marks - 3) * num;
+            }
+          }
+        }
+      });
+      return scores;
+    }
+
+    function classement(scores) {
+      // Retourne l'index des joueurs triés par score décroissant (plus de points en tête)
+      return scores
+        .map((s, i) => [s, i])
+        .sort((a, b) => b[0] - a[0])
+        .map(pair => pair[1]);
+    }
+
+    // Animation confetti
+    function confettiBoom() {
+      const ctx = confettiCanvas.getContext("2d");
+      const w = window.innerWidth, h = window.innerHeight;
+      confettiCanvas.width = w;
+      confettiCanvas.height = h;
+      confettiCanvas.style.display = "";
+      let pieces = [];
+      for (let i=0;i<70;i++) {
+        pieces.push({
+          x: Math.random()*w, y: Math.random()*-60,
+          r: 6+Math.random()*10,
+          c: `hsl(${Math.random()*360},80%,${70+Math.random()*20}%)`,
+          vx: -2+Math.random()*4,
+          vy: 2+Math.random()*2
+        });
+      }
+      let frames=0;
+      function draw() {
+        ctx.clearRect(0,0,w,h);
+        for (let p of pieces) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+          ctx.fillStyle = p.c;
+          ctx.fill();
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.06;
+          if (p.y > h+40) { p.y = -60; p.x = Math.random()*w;}
+        }
+        frames++;
+        if (frames<40) requestAnimationFrame(draw);
+        else confettiCanvas.style.display = "none";
+      }
+      draw();
+    }
+
+    // Rendu du tableau
     function renderBoard() {
-      const nbPlayers = Number(playersSelect.value);
+      nbPlayers = Number(playersSelect.value);
       scoreboard.innerHTML = "";
       // header
       const header = document.createElement('tr');
-      header.innerHTML = `<th></th>` + Array.from({length: nbPlayers},(_,i)=>`<th>Joueur ${i+1}</th>`).join('');
+      header.innerHTML = `<th></th>` + playerNames.map((n, i) =>
+        `<th title="${n.replace(/"/g,'')}"><span>${n.length>14?n.slice(0,12)+'…':n}</span></th>`
+      ).join('');
       scoreboard.appendChild(header);
+
       // rows
       numbers.forEach((num, rowIdx) => {
         const tr = document.createElement('tr');
+        let closedBy = state[rowIdx].findIndex(v=>v<3)==-1; // Tous fermés ?
+        if (closedBy) tr.classList.add("row-closed");
         tr.innerHTML = `<td><span class="numcell">${num}</span></td>` + 
           state[rowIdx].map((marks, playerIdx) => {
             let circles = '';
             for (let m=0; m<3; m++) {
-              circles += `<span class="circle${marks > m ? ' filled' : ''}" data-row="${rowIdx}" data-player="${playerIdx}" data-mark="${m}"></span>`;
+              circles += `<span class="circle${marks > m ? ' filled' : ''}" data-row="${rowIdx}" data-player="${playerIdx}" data-mark="${m}" title="Cliquer pour remplir/vide"></span>`;
             }
-            return `<td><div class="marks">${circles}</div></td>`;
+            // "overkill" - si marks > 3, on affiche des petits +X après les ronds
+            if (marks>3) {
+              circles += `<span style="margin-left:6px;color:#bba02e;font-weight:bold;">+${marks-3}</span>`;
+            }
+            return `<td style="position:relative;"><div class="marks">${circles}</div></td>`;
           }).join('');
         scoreboard.appendChild(tr);
+
+        // Si case fermée, on met l'annotation "Fermé"
+        if (closedBy) {
+          const closedTag = document.createElement('div');
+          closedTag.className = "closed-tag";
+          closedTag.textContent = "Fermé";
+          tr.children[0].style.position = "relative";
+          tr.children[0].appendChild(closedTag);
+        }
       });
     }
 
-    function resetBoard() {
-      const nbPlayers = Number(playersSelect.value);
-      state = createState(nbPlayers);
-      renderBoard();
+    // Scorezone
+    function renderScore() {
+      let scores = calcScores();
+      let order = classement(scores);
+
+      let out = `<div class="score-list">`;
+      order.forEach((idx, rank) => {
+        let leader = rank==0 ? ' leader' : '';
+        out += `<span class="${leader}" title="${playerNames[idx]}">${playerNames[idx]} : <b>${scores[idx]}</b></span>`;
+        if (rank==0 && scores[idx]>0) out += ' 🏆';
+      });
+      out += `</div>`;
+      out += `<div style="font-size:.98em;color:#6a6a6a;">Classement : `;
+      out += order.map(i => `<b>${playerNames[i]}</b>`).join(" &rarr; ");
+      out += `</div>`;
+      scorezone.innerHTML = out;
     }
 
-    // Event delegation for mark clicks
+    // Reset + maj noms
+    function resetBoard() {
+      nbPlayers = Number(playersSelect.value);
+      state = createState(nbPlayers);
+      playerNames = createNames(nbPlayers);
+      renderEditNames();
+      renderBoard();
+      renderScore();
+    }
+
+    // Gère les clics sur les ronds
     scoreboard.addEventListener('click', function(e){
       const c = e.target;
       if (!c.classList.contains('circle')) return;
       const row = Number(c.dataset.row);
       const player = Number(c.dataset.player);
       const mark = Number(c.dataset.mark);
+      // Animation : secoue toute la ligne si déjà fermé
+      let closedBy = state[row].findIndex(v=>v<3)==-1;
+      if (closedBy) {
+        scoreboard.rows[row+1].classList.add("row-closed");
+        scoreboard.rows[row+1].classList.add("shake-anim");
+        setTimeout(()=>scoreboard.rows[row+1].classList.remove("shake-anim"),320);
+        return;
+      }
+      // Normal : toggle le rond
       if (state[row][player] === mark + 1) {
         state[row][player] = mark;
       } else if (state[row][player] < mark + 1) {
@@ -130,18 +349,43 @@
       } else {
         state[row][player] = mark + 1;
       }
+      // Animation pop
+      c.classList.remove('filled');
+      void c.offsetWidth; // Force repaint pour relancer l'animation
+      c.classList.add('filled');
+      // Si le joueur ferme la case à ce clic => confetti boom !
+      if (state[row][player] === 3) {
+        let nowClosed = state[row].findIndex(v=>v<3)==-1;
+        if (nowClosed) confettiBoom();
+      }
       renderBoard();
+      renderScore();
     });
 
     playersSelect.addEventListener('change', function() {
       resetBoard();
     });
 
-    // First render
+    // Init
     resetBoard();
+
+    // Ajoute une petite animation shake (optionnelle, sur tentative de sur-remplissage)
+    const styleShake = document.createElement('style');
+    styleShake.innerHTML = `
+    .shake-anim { animation: shake .25s; }
+    @keyframes shake {
+      10% { transform: translateX(-5px);}
+      30% { transform: translateX(6px);}
+      50% { transform: translateX(-7px);}
+      70% { transform: translateX(3px);}
+      90% { transform: translateX(1px);}
+      100% { transform: translateX(0);}
+    }`;
+    document.head.appendChild(styleShake);
+
   </script>
-  <p style="margin:24px 0 6px 0;font-size:.93rem;color:#888;text-align:center">
-    Fait par Nicolas & ChatGPT – <b>Utilise sur GitHub Pages sans aucune dépendance.</b>
+  <p style="margin:28px 0 8px 0;font-size:.93rem;color:#888;text-align:center">
+    Fait par Nicolas & ChatGPT – <b>score cricket fun, pour GitHub Pages !</b>
   </p>
 </body>
 </html>
